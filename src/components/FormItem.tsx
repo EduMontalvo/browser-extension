@@ -9,29 +9,40 @@ const FormItem = () => {
 
   const [allData, setAllData] = useState<DataItem[]>(DataArray)
   const [filteredData, setFilteredData] = useState<DataItem[]>(DataArray)
+
+  const [currentFilter, setCurrentFilter] = useState<'all' | 'active' | 'inactive'>('all')
   
 
   const handleToggle = (id: DataItem['id']) => {
     const searching = allData.map(data => data.id === id ? { ...data, state: !data.state } : data)
     setAllData(searching)
-    const updateFilteredData = filteredData.map(data => data.id === id ? { ...data, state: !data.state } : data)
-    setFilteredData(updateFilteredData)
+    applyCurrentFilter(searching)
+  }
+
+  const applyCurrentFilter = (data : DataItem[]) => {
+    if(currentFilter === 'active'){
+      setFilteredData(data.filter(d => d.state === true))
+    }else if ( currentFilter === 'inactive'){
+      setFilteredData(data.filter(d => d.state === false))
+    }else{
+      setFilteredData(data)
+    }
   }
 
   const showResults = () => {
-    
-  }
-  const handleDisable = () => {
-
-    const disactive = allData.filter(data => data.state === false)
-    setFilteredData(disactive)
-    console.log(disactive)
+    setFilteredData(allData)
   }
   const handleEnable = () => {
-    
+    setCurrentFilter('active')
     const active = allData.filter(data => data.state === true)
     setFilteredData(active)
     console.log(active)
+  }
+  const handleDisable = () => {
+    setCurrentFilter('inactive')
+    const disactive = allData.filter(data => data.state === false)
+    setFilteredData(disactive)
+    console.log(disactive)
   }
 
 
@@ -39,7 +50,7 @@ const FormItem = () => {
     <>
       <h2 className='text-white font-semibold text-4xl text-center'>Extensions List</h2>
       <div className='flex justify-center gap-4 my-8'>
-        {/* <ButtonFilter name={'All'} /> */}
+        <ButtonFilter name={'All'} action={showResults}/>
         <ButtonFilter name={'Active'} action={handleEnable} />
         <ButtonFilter name={'Inactive'} action={handleDisable}/>
       </div>
